@@ -4,8 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>slopkit</title>
-<link rel="preload" href="cat.jpg" as="image">
-<link rel="preload" href="mmhmm-cats-ps5.gif" as="image">
 
 <script>(function () {
     var pending = [];
@@ -151,41 +149,91 @@
 
   body.quiet #stage { font-size: 34px; }
 
-  #cat { box-sizing:border-box; display:block; margin:0 auto 12px;
-         width:150px; height:150px; max-width:34vw; max-height:34vw;
-         border:4px solid #343c49; border-radius:18px;
-         box-shadow:0 24px 70px rgba(0,0,0,.5); overflow:hidden; }
-  #cat img { display:block; width:100%; height:100%; object-fit:cover; }
-  #cat.ok  { border-color:#16c60c; }
-  #cat.bad { border-color:#e74856; }
+  #cat { display:flex; align-items:center; justify-content:center; gap:9px;
+         width:auto; min-width:150px; margin:0 auto 16px;
+         padding:11px 22px; border-radius:999px;
+         background:rgba(16,22,34,.72);
+         border:1px solid #2c3a4d;
+         box-shadow:0 10px 26px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.05); }
+  #cat .catLed { width:9px; height:9px; border-radius:50%; flex:none;
+                 background:#5a6472; box-shadow:0 0 9px rgba(90,100,114,.55);
+                 transition: background .2s ease, box-shadow .2s ease; }
+  #cat .catLabel { font:700 12px/1 ui-monospace,Menlo,Consolas,monospace;
+                   letter-spacing:.2em; text-transform:uppercase; color:#8fa1b3; }
+  #cat.ok .catLed { background:#16c60c; box-shadow:0 0 12px rgba(22,198,12,.85); }
+  #cat.ok .catLabel { color:#9be89f; }
+  #cat.bad .catLed { background:#e74856; box-shadow:0 0 12px rgba(231,72,86,.85); }
+  #cat.bad .catLabel { color:#ff9aa3; }
   #failureMessage { display:none; margin:0 auto 12px; color:#ff6473;
     font-size:25px; font-weight:800; text-align:center; letter-spacing:.02em; }
   #failureMessage.on { display:block; }
 
   body.loader-ready { justify-content:flex-start; overflow-y:auto; padding-top:22px; }
-  body.loader-ready #cat { width:112px; height:112px; margin-bottom:6px; }
+  body.loader-ready #cat { margin-bottom:10px; }
   body.loader-ready #nav { display:none !important; }
-  #payloadMenu { display:none; width:330px; max-width:86vw; margin:4px auto 24px; }
+  #payloadMenu { display:none; width:360px; max-width:88vw; margin:4px auto 24px; }
   #payloadMenu.on { display:block; }
-  #payloadMenu .menuTitle { display:block; width:330px; height:56px;
-    max-width:100%; margin:0 0 10px; }
-  #payloadMenu .payloadTile {
-    box-sizing:border-box; display:block; width:330px; max-width:100%;
-    margin:0 0 10px; padding:0; border:0; border-radius:13px;
-    background:transparent; text-decoration:none !important;
+  #payloadMenu .menuTitle {
+    display:flex; flex-direction:column; gap:2px;
+    padding:14px 16px; margin:0 0 10px; border-radius:13px;
+    background:linear-gradient(135deg,#1c2a44,#131c2e);
+    border:1px solid rgba(110,135,185,.22);
+    box-shadow:0 10px 26px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.06);
   }
-  #payloadMenu .payloadTile:focus { outline:3px solid #fff; outline-offset:2px; }
-  #payloadMenu .payloadTile img { display:block; width:330px; height:72px;
-    max-width:100%; margin:0 auto; }
-  #payloadMenu .payloadTile.busy { opacity:.42; }
+  #payloadMenu .menuTitleText {
+    font-size:17px; font-weight:800; letter-spacing:.07em;
+    text-transform:uppercase; color:#e7edf8;
+  }
+  #payloadMenu .menuTitleSub { font-size:13px; color:#7c8795; }
+  #payloadMenu .payloadTile {
+    box-sizing:border-box; display:flex; align-items:center; gap:14px;
+    width:100%; margin:0 0 10px; padding:13px 16px;
+    border-radius:13px; text-decoration:none !important;
+    background:linear-gradient(135deg,#1d2939,#141c29);
+    border:1px solid #2c3a4d;
+    box-shadow:0 8px 22px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.05);
+    transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+  }
+  #payloadMenu .payloadTile:hover {
+    border-color:rgba(56,189,248,.5);
+    transform:translateY(-1px);
+    box-shadow:0 12px 28px rgba(0,0,0,.34), inset 0 1px rgba(255,255,255,.06);
+  }
+  #payloadMenu .payloadTile:focus { outline:3px solid rgba(125,211,252,.75); outline-offset:2px; }
+  #payloadMenu .payloadTile.busy { opacity:.45; pointer-events:none; }
+  #payloadMenu .tileIcon { font-size:28px; line-height:1; flex:none; }
+  #payloadMenu .tileBody { display:flex; flex-direction:column; gap:2px; min-width:0; }
+  #payloadMenu .tileName { font-size:16px; font-weight:700; color:#e7edf8; }
+  #payloadMenu .tileMeta { font-size:12.5px; color:#7c8795; }
+  #payloadMenu .tileVerVal { color:#9fb1c3; font-family:ui-monospace,Menlo,Consolas,monospace; }
+  #payloadMenu .tileNew { color:#f6e6bd; }
+  #payloadMenu .tileState {
+    margin-left:auto; flex:none;
+    font:600 10.5px/1 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.08em; text-transform:uppercase;
+    padding:5px 10px; border-radius:999px;
+    color:#8fa1b3; background:rgba(20,28,42,.8); border:1px solid #33415a;
+  }
+  #payloadMenu .tileState[data-state="sending"] {
+    color:#f6e6bd; border-color:rgba(235,203,139,.55); background:rgba(60,48,20,.55);
+    animation:tilepulse 1.1s ease-in-out infinite;
+  }
+  #payloadMenu .tileState[data-state="sent"] {
+    color:#b8f0c6; border-color:rgba(71,199,106,.6); background:rgba(22,62,36,.55);
+  }
+  #payloadMenu .tileState[data-state="failed"] {
+    color:#ffb3bb; border-color:rgba(231,72,86,.6); background:rgba(74,16,22,.55);
+  }
+  @keyframes tilepulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
 
   #wrap { display:none !important; }
 </style>
 </head>
 <body class="quiet">
 <div id="failureMessage">UNLUCKY &mdash; YOU NEED TO REBOOT</div>
-<div id="cat">
-  <img id="catImage" src="mmhmm-cats-ps5.gif" alt="">
+<div id="cat" aria-hidden="true">
+  <span class="catLed"></span>
+  <span class="catLabel" id="catLabel">idle</span>
 </div>
 <h1>poops</h1>
 <div id="reboot"></div>
@@ -197,12 +245,45 @@
 <pre id="early"></pre>
 <pre id="scr"></pre>
 <div id="payloadMenu">
-  <img class="menuTitle" data-src="../ui/payload-menu-title.png" alt="">
-  <a class="payloadTile" href="#" data-name="ftpsrv-ps5.elf" data-key="ftp"><img data-src="../ui/payload-ftp-default.png" alt=""></a>
-  <a class="payloadTile" href="#" data-name="gdbsrv-ps5.elf" data-key="gdb"><img data-src="../ui/payload-gdb-default.png" alt=""></a>
-  <a class="payloadTile" href="#" data-name="klogsrv-ps5.elf" data-key="klog"><img data-src="../ui/payload-klog-default.png" alt=""></a>
-  <a class="payloadTile" href="#" data-name="shsrv-ps5.elf" data-key="shell"><img data-src="../ui/payload-shell-default.png" alt=""></a>
-  <a class="payloadTile" href="#" data-name="websrv-ps5.elf" data-key="web"><img data-src="../ui/payload-web-default.png" alt=""></a>
+  <div class="menuTitle">
+    <span class="menuTitleText">payload menu</span>
+    <span class="menuTitleSub">elfldr on port 9021 &middot; select a payload to send</span>
+  </div>
+  <a class="payloadTile" href="#" data-name="zftpd-ps5.elf" data-key="ftp">
+    <span class="tileIcon" aria-hidden="true">📁</span>
+    <span class="tileBody"><span class="tileName">zftpd</span><span class="tileMeta">FTP server &middot; <span class="tileVer">v<span class="tileVerVal">—</span></span><span class="tileNew" hidden></span></span></span>
+    <span class="tileState" data-state="idle">run</span>
+  </a>
+  <a class="payloadTile" href="#" data-name="zftpd-ps5-zhttp.elf" data-key="zhttp">
+    <span class="tileIcon" aria-hidden="true">📂</span>
+    <span class="tileBody"><span class="tileName">zftpd web</span><span class="tileMeta">FTP + web file explorer (zhttp) &middot; <span class="tileVer">v<span class="tileVerVal">—</span></span><span class="tileNew" hidden></span></span></span>
+    <span class="tileState" data-state="idle">run</span>
+  </a>
+  <a class="payloadTile" href="#" data-name="MemDBG-ps5.elf" data-key="memdbg">
+    <span class="tileIcon" aria-hidden="true">🐞</span>
+    <span class="tileBody"><span class="tileName">MemDBG</span><span class="tileMeta">memory debugger &amp; trainer daemon &middot; <span class="tileVer">v<span class="tileVerVal">—</span></span><span class="tileNew" hidden></span></span></span>
+    <span class="tileState" data-state="idle">run</span>
+  </a>
+  <a class="payloadTile" href="#" data-name="gdbsrv-ps5.elf" data-key="gdb">
+    <span class="tileIcon" aria-hidden="true">🛠️</span>
+    <span class="tileBody"><span class="tileName">gdbsrv</span><span class="tileMeta">GDB stub debugger</span></span>
+    <span class="tileState" data-state="idle">run</span>
+  </a>
+  <a class="payloadTile" href="#" data-name="klogsrv-ps5.elf" data-key="klog">
+    <span class="tileIcon" aria-hidden="true">📡</span>
+    <span class="tileBody"><span class="tileName">klogsrv</span><span class="tileMeta">kernel log server</span></span>
+    <span class="tileState" data-state="idle">run</span>
+  </a>
+  <a class="payloadTile" href="#" data-name="shsrv-ps5.elf" data-key="shell">
+    <span class="tileIcon" aria-hidden="true">💻</span>
+    <span class="tileBody"><span class="tileName">shsrv</span><span class="tileMeta">system shell</span></span>
+    <span class="tileState" data-state="idle">run</span>
+  </a>
+  <a class="payloadTile" href="#" data-name="websrv-ps5.elf" data-key="web">
+    <span class="tileIcon" aria-hidden="true">🌐</span>
+    <span class="tileBody"><span class="tileName">websrv</span><span class="tileMeta">web file explorer</span></span>
+    <span class="tileState" data-state="idle">run</span>
+  </a>
 </div>
 <div id="nav"></div>
 <div id="arm" hidden>Open this page with <b>?go=1</b> to arm it. Nothing runs
@@ -400,11 +481,17 @@ function catState(tag, extra) {
     try {
         const c = document.getElementById("cat");
         if (!c) return;
-        if (elfldrSpawned) { c.className = "ok"; return; }
+        const label = document.getElementById("catLabel");
+        if (elfldrSpawned) {
+            c.className = "ok";
+            if (label) label.textContent = "ready";
+            return;
+        }
         if (tag !== "POOPS-COMPLETE") return;
         const m = /-fail=(\d+)/.exec(extra || "");
         const failed = m ? parseInt(m[1], 10) : 1;
         c.className = failed === 0 ? "ok" : "bad";
+        if (label) label.textContent = failed === 0 ? "ready" : "failed";
     } catch (e) { }
 }
 
@@ -469,7 +556,7 @@ const rowByKey = new Map();
 let payloadSendBusy = false;
 const PAYLOAD_PORT = 9021;
 const PAYLOAD_BUFFER_SIZE = 0x10000;
-const PAYLOAD_MAX_SIZE = 0x200000;
+const PAYLOAD_MAX_SIZE = 0x600000; // 6 MiB — fits the zftpd zhttp variant (~3.8 MiB)
 let payloadSendStore = null;
 let payloadSockaddrStore = null;
 let payloadSocketOptionStore = null;
@@ -480,23 +567,80 @@ function showPayloadMenu() {
     navEl.textContent = "";
     navEl.style.display = "none";
     payloadMenuEl.className = "on";
-    const title = payloadMenuEl.getElementsByClassName("menuTitle")[0];
-    if (title && !title.getAttribute("src"))
-        title.setAttribute("src", title.getAttribute("data-src"));
     const tiles = payloadMenuEl.getElementsByTagName("a");
-    for (let i = 0; i < tiles.length; ++i) {
-        const image = tiles[i].getElementsByTagName("img")[0];
-        if (image && !image.getAttribute("src"))
-            image.setAttribute("src", image.getAttribute("data-src"));
-    }
     if (tiles.length) try { tiles[0].focus(); } catch (e) { }
+    refreshPayloadVersions();
 }
 
 function setPayloadTileState(tile, state) {
-    const image = tile.getElementsByTagName("img")[0];
-    const key = tile.getAttribute("data-key");
-    if (image && key)
-        image.setAttribute("src", "../ui/payload-" + key + "-" + state + ".png");
+    if (["idle", "sending", "sent", "failed"].indexOf(state) < 0) state = "idle";
+    const st = tile.getElementsByClassName("tileState")[0];
+    if (st) st.dataset.state = state;
+    const text = { idle: "run", sending: "sending…", sent: "sent ✓", failed: "failed" }[state];
+    if (st) st.textContent = text;
+}
+
+// Upstream sources for the payload version display. Only used for info:
+// GitHub's asset CDN sends no CORS headers, so the actual payload bytes
+// always come from ../payloads/ (kept fresh by tools/update_payloads.py).
+const PAYLOAD_UPSTREAM = {
+    "zftpd-ps5.elf": { repo: "seregonwar/zftpd" },
+    "zftpd-ps5-zhttp.elf": { repo: "seregonwar/zftpd" },
+    "MemDBG-ps5.elf": { repo: "seregonwar/MemDBG" }
+};
+// The tile always shows the version that is actually bundled (from
+// payloads/manifest.json); the best-effort GitHub check only appends a
+// "new X" hint when a newer release exists. The bytes sent to elfldr always
+// come from ../payloads/, never from GitHub.
+const tileLocalTag = {};
+const tileLatestTag = {};
+
+function renderTileVer(name) {
+    const cur = tileLocalTag[name];
+    const latest = tileLatestTag[name];
+    const showNew = !!cur && !!latest && latest !== cur;
+    const tiles = payloadMenuEl.getElementsByTagName("a");
+    for (let i = 0; i < tiles.length; ++i) {
+        if (tiles[i].getAttribute("data-name") !== name) continue;
+        const val = tiles[i].getElementsByClassName("tileVerVal")[0];
+        if (val && cur) val.textContent = String(cur).replace(/^v/i, "");
+        const hint = tiles[i].getElementsByClassName("tileNew")[0];
+        if (hint) {
+            hint.hidden = !showNew;
+            if (showNew)
+                hint.textContent = " · new " + String(latest).replace(/^v/i, "");
+        }
+    }
+}
+
+function setTileVer(name, tag) {
+    if (!tag) return;
+    tileLocalTag[name] = tag;
+    renderTileVer(name);
+}
+
+function tileUpdateHint(name, latest) {
+    if (!latest) return;
+    tileLatestTag[name] = latest;
+    renderTileVer(name);
+}
+
+function refreshPayloadVersions() {
+    fetch("../payloads/manifest.json", { cache: "no-store" })
+        .then(r => r.ok ? r.json() : Promise.reject(new Error("http " + r.status)))
+        .then(m => {
+            const src = (m && m.sources) || {};
+            for (const file of Object.keys(PAYLOAD_UPSTREAM))
+                if (src[file]) setTileVer(file, src[file].tag);
+        })
+        .catch(() => { });
+    for (const file of Object.keys(PAYLOAD_UPSTREAM)) {
+        fetch("https://api.github.com/repos/" + PAYLOAD_UPSTREAM[file].repo
+            + "/releases/latest", { cache: "no-store" })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error()))
+            .then(rel => { if (rel && rel.tag_name) tileUpdateHint(file, rel.tag_name); })
+            .catch(() => { });
+    }
 }
 
 function payloadIsListed(name) {
@@ -563,7 +707,7 @@ async function sendPayloadToElfldr(name) {
     if (!bytes.length)
         throw new Error("payload is empty");
     if (bytes.length > PAYLOAD_MAX_SIZE)
-        throw new Error("payload is larger than the 2 MiB limit");
+        throw new Error("payload is larger than the 6 MiB limit");
     if (bytes.length < 4 || bytes[0] !== 0x7f || bytes[1] !== 0x45
         || bytes[2] !== 0x4c || bytes[3] !== 0x46)
         throw new Error("payload does not start with the ELF signature");
@@ -727,10 +871,8 @@ function setCatResult(success) {
     if (failureMessage) failureMessage.className = success ? "" : "on";
     if (cat) {
         cat.className = success ? "ok" : "bad";
-        if (success) {
-            const image = document.getElementById("catImage");
-            if (image) image.src = "cat.jpg";
-        }
+        const label = document.getElementById("catLabel");
+        if (label) label.textContent = success ? "ready" : "failed";
     }
 }
 

@@ -1,0 +1,29 @@
+{
+  "sources": {
+    "MemDBG-ps5.elf": {
+      "asset": "MemDBG-ps5.elf",
+      "desc": "MemDBG memory debugger / trainer daemon",
+      "repo": "seregonwar/MemDBG",
+      "sha256": "4eb2cb2fb87c799b32370318c53a981d4eba120f9dc64e8b94f50b6fba2a59a8",
+      "size": 1254096,
+      "tag": "nightly-20260809-g1a859d3"
+    },
+    "zftpd-ps5-zhttp.elf": {
+      "asset": "zftpd-ps5-zhttp-v1.5.0.elf",
+      "desc": "zftpd FTP + web file explorer (zhttp)",
+      "repo": "seregonwar/zftpd",
+      "sha256": "6cf6a738112fc339619ebe772690fa611f60ecdb20164a0e3f49e137277bc42b",
+      "size": 3798320,
+      "tag": "v1.5.0"
+    },
+    "zftpd-ps5.elf": {
+      "asset": "zftpd-ps5-v1.5.0.elf",
+      "desc": "zftpd FTP server (replaces the legacy ftpsrv)",
+      "repo": "seregonwar/zftpd",
+      "sha256": "68a80e1cb45544c15b1581a49154ad14aa8e29483e5fec786f2a95e0e28ea6cb",
+      "size": 371616,
+      "tag": "v1.5.0"
+    }
+  },
+  "updated_at": "2026-08-10T13:48:13Z"
+}

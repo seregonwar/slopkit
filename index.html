@@ -3,92 +3,337 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>slopkit</title>
-<link rel="preload" href="slopkit/cat.jpg" as="image">
-<link rel="preload" href="slopkit/mmhmm-cats-ps5.gif" as="image">
+<title>slopkit — PS5 jailbreak utility</title>
+<meta name="description" content="One-shot WebKit &amp; kernel jailbreak for PlayStation 5, firmware 9.00 – 12.00. Bundles zftpd and MemDBG payloads.">
 <style>
+  :root {
+    --bg-0: #04060c;
+    --bg-1: #0a0f1c;
+    --ink: #e8eef8;
+    --ink-2: #a6b3c9;
+    --ink-3: #6d7b96;
+    --ink-4: #4b5872;
+    --line: rgba(128, 156, 212, .14);
+    --line-2: rgba(128, 156, 212, .26);
+    --panel: rgba(14, 19, 33, .66);
+    --acc: #5cc8ff;
+    --acc-2: #4f7dff;
+    --ok: #34d399;
+    --bad: #f87171;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+    --r-lg: 20px;
+    --r-md: 13px;
+    --r-sm: 8px;
+  }
+
+  * { box-sizing: border-box; }
+
   html, body {
-    margin: 0; padding: 0; height: 100%;
-    background: radial-gradient(circle at 50% 28%, #18233a 0, #0c111b 44%, #07090e 100%);
-    color: #c8ced8;
-    font: 15px/1.5 "Segoe UI", system-ui, sans-serif;
-    overflow: hidden;
-  }
-  #wrap {
-    height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 22px;
-  }
-  #cat {
-    box-sizing: border-box; width: 150px; height: 150px; object-fit: cover;
-    max-width: 34vw; max-height: 34vw;
-    border: 4px solid #343c49; border-radius: 18px;
-    box-shadow: 0 24px 70px rgba(0,0,0,.5);
+    margin: 0; padding: 0; min-height: 100%;
+    background: var(--bg-0);
+    color: var(--ink);
+    font: 15px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  #actions {
-    display: flex; flex-direction: column; gap: 14px;
-    align-items: center; justify-content: center;
+  ::selection { background: rgba(92, 200, 255, .28); }
+
+  /* ---------- backdrop ---------- */
+  .scene { position: fixed; inset: 0; z-index: 0; overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 0%, #0d1530 0%, var(--bg-1) 46%, var(--bg-0) 100%); }
+  .scene .grid { position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(96, 126, 196, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(96, 126, 196, .05) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(78% 62% at 50% 40%, #000 0%, transparent 100%);
+            mask-image: radial-gradient(78% 62% at 50% 40%, #000 0%, transparent 100%); }
+  .scene .glow { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .42; will-change: transform; }
+  .glow.g1 { width: 44vw; height: 44vw; left: -12vw; top: -16vw;
+             background: radial-gradient(circle, rgba(56, 150, 255, .34), transparent 70%);
+             animation: drift1 26s ease-in-out infinite alternate; }
+  .glow.g2 { width: 38vw; height: 38vw; right: -10vw; top: 12vh;
+             background: radial-gradient(circle, rgba(120, 90, 255, .26), transparent 70%);
+             animation: drift2 32s ease-in-out infinite alternate; }
+  .glow.g3 { width: 30vw; height: 30vw; left: 22vw; bottom: -16vw;
+             background: radial-gradient(circle, rgba(52, 211, 153, .14), transparent 70%);
+             animation: drift3 38s ease-in-out infinite alternate; }
+  .scene .vignette { position: absolute; inset: 0;
+    background: radial-gradient(92% 82% at 50% 44%, transparent 52%, rgba(2, 4, 9, .78) 100%); }
+  @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(9vw,6vh) scale(1.14); } }
+  @keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-8vw,-5vh) scale(1.1); } }
+  @keyframes drift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(-6vw,-8vh) scale(1.18); } }
+
+  /* ---------- layout ---------- */
+  #wrap { position: relative; z-index: 1; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 22px; }
+
+  .card { width: 100%; max-width: 580px; padding: 30px 34px 26px;
+    border-radius: var(--r-lg);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: 0 44px 100px rgba(0,0,0,.52), inset 0 1px rgba(255,255,255,.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px); }
+
+  /* ---------- header ---------- */
+  .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .mark {
+    width: 46px; height: 46px; flex: none; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(150deg, #1c2c4c, #101a2e);
+    border: 1px solid var(--line-2);
+    box-shadow: 0 8px 22px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.08);
   }
-  .action {
-    box-sizing: border-box; display: inline-block; min-width: 185px;
-    padding: 17px 30px; border: 1px solid rgba(255,255,255,.22);
-    border-radius: 15px; color: #fff;
-    background: linear-gradient(135deg, #3b8cff, #1957c8);
-    box-shadow: 0 12px 30px rgba(18,79,190,.32), inset 0 1px rgba(255,255,255,.22);
-    font: 700 20px/1 "Segoe UI", system-ui, sans-serif;
-    letter-spacing: .025em; text-align: center;
+  .mark svg { width: 24px; height: 24px; }
+  .brand .titles { min-width: 0; }
+  .eyebrow {
+    font: 600 10.5px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase;
+    color: var(--ink-3); margin: 0 0 5px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before, .eyebrow::after { content: ""; height: 1px; flex: 1;
+    background: linear-gradient(90deg, transparent, var(--line-2), transparent); }
+  h1 {
+    margin: 0; font: 800 40px/1 var(--sans); letter-spacing: -.02em; color: transparent;
+  }
+  h1 .wm {
+    background: linear-gradient(112deg, #f4f8ff 8%, #9adcfc 42%, #6f8eff 78%, #aab6ff 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  h1 .cursor { display: inline-block; width: .55em; height: .8em; margin-left: 2px;
+    vertical-align: baseline; background: var(--acc);
+    animation: blink 1.15s step-end infinite; }
+  @keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+
+  .tagline { margin: 14px 0 0; color: var(--ink-2); font-size: 14.5px; }
+  .tagline b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- firmware chips ---------- */
+  .fwsec { margin: 22px 0 0; }
+  .sec-label {
+    font: 600 10.5px var(--mono); letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-3); margin: 0 0 9px;
+  }
+  .fws { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fw {
+    font: 600 11px/1 var(--mono); color: var(--ink-2);
+    padding: 5px 9px; border-radius: var(--r-sm);
+    background: rgba(26, 36, 60, .5);
+    border: 1px solid var(--line);
+    transition: color .14s ease, border-color .14s ease, transform .14s ease;
+  }
+  .fw:hover { color: var(--acc); border-color: rgba(92, 200, 255, .4); transform: translateY(-1px); }
+
+  /* ---------- CTA ---------- */
+  .actions { margin: 24px 0 0; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  #start {
+    display: flex; align-items: center; justify-content: center; gap: 11px;
+    width: 100%; padding: 16px 0;
+    border-radius: var(--r-md);
+    border: 1px solid rgba(150, 210, 255, .4);
+    color: #041220;
+    font: 800 19px/1 var(--sans); letter-spacing: .05em;
     text-decoration: none;
+    background: linear-gradient(135deg, #7cd9ff 0%, #45b8f5 42%, #4f7dff 100%);
+    box-shadow: 0 16px 40px rgba(64, 130, 255, .34), inset 0 1px rgba(255,255,255,.4);
+    position: relative; overflow: hidden;
+    transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
     cursor: pointer;
-    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
   }
+  #start::after { content: ""; position: absolute; top: 0; left: -85%; width: 46%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent);
+    transform: skewX(-20deg); animation: shine 3.4s ease-in-out infinite; }
+  @keyframes shine { 0%, 52% { left: -85%; } 100% { left: 135%; } }
+  #start svg { width: 16px; height: 16px; }
+  #start:hover { transform: translateY(-2px); box-shadow: 0 22px 54px rgba(64, 130, 255, .46), inset 0 1px rgba(255,255,255,.4); }
+  #start:active { transform: translateY(1px); }
+  #start:focus-visible { outline: 3px solid rgba(125, 211, 252, .85); outline-offset: 3px; }
+  .hint { color: var(--ink-3); font-size: 12px; margin: 0; }
+  .hint code { font-family: var(--mono); color: var(--ink-2); }
 
-  .action:focus {
-    outline: none; transform: translateY(-3px);
-    border-color: #fff; box-shadow: 0 0 0 4px rgba(91,158,255,.3), 0 16px 36px rgba(18,79,190,.45);
+  /* ---------- status panels ---------- */
+  .panels { margin: 26px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .panel {
+    border-radius: var(--r-md);
+    background: rgba(7, 11, 20, .62);
+    border: 1px solid var(--line);
+    padding: 13px 14px;
+    text-align: left;
   }
-  .action:active { transform: translateY(1px); }
-  .action.secondary {
-    color: #eaf2ff; background: linear-gradient(135deg, #273850, #172235);
-    box-shadow: 0 12px 30px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.12);
+  .panel .sec-label { margin: 0 0 9px; }
+  .prow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    font: 12px/1.7 var(--mono); color: var(--ink-2); }
+  .prow .k { color: var(--ink-3); }
+  .prow .v { color: var(--ink); font-weight: 600; }
+  .led { display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ink-4); margin-right: 6px; vertical-align: 1px; }
+  .led.ok { background: var(--ok); box-shadow: 0 0 8px rgba(52, 211, 153, .75); }
+  .led.warn { background: #fbbf24; box-shadow: 0 0 8px rgba(251, 191, 36, .75); }
+  .prow .v .led { margin-right: 0; margin-left: 6px; }
+
+  /* ---------- footer ---------- */
+  footer { margin-top: 20px; color: var(--ink-4); font-size: 11.5px; text-align: center;
+    max-width: 580px; line-height: 1.7; }
+  footer a { color: var(--ink-3); text-decoration: none; border-bottom: 1px dotted rgba(128, 156, 212, .35); transition: color .14s ease; }
+  footer a:hover { color: var(--acc); border-bottom-color: transparent; }
+
+  @media (max-width: 560px) {
+    .card { padding: 26px 20px 22px; }
+    h1 { font-size: 34px; }
+    .panels { grid-template-columns: 1fr; }
   }
-  .action.secondary:focus { box-shadow: 0 0 0 4px rgba(91,158,255,.25), 0 16px 36px rgba(0,0,0,.38); }
-  .action.done {
-    color: #effff4; background: linear-gradient(135deg, #239d52, #126531);
-    border-color: rgba(123,255,162,.55); box-shadow: 0 12px 30px rgba(24,142,67,.26);
-    pointer-events: none;
-  }
-  #status { min-height: 1.5em; color: #9fb1c3; font-size: 18px; }
-  @media (max-width: 650px) {
-    #actions { width: 82vw; }
-    .action { width: 100%; }
+  @media (prefers-reduced-motion: reduce) {
+    .glow, #start::after, h1 .cursor { animation: none !important; }
+    * { transition-duration: .01s !important; }
   }
 </style>
 </head>
 <body>
 
-<div id="wrap">
-  <img id="cat" src="slopkit/cat.jpg" alt="">
-  <div id="actions">
-    <a id="start" class="action"
-       href="slopkit/poops.html?go=1&amp;auto=1&amp;trigger=netcontrol&amp;payload=1&amp;v=17"
-       tabindex="0">RUN</a>
-  </div>
-  <div id="status"></div>
+<div class="scene">
+  <div class="grid"></div>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+  <div class="vignette"></div>
 </div>
 
-<script>try {
-    var q = new URLSearchParams(location.search);
-    var start = document.getElementById("start");
-    start.focus();
-} catch (e) {}
+<div id="wrap">
+  <div class="card">
 
-try {
-    document.getElementById("cat").addEventListener("error", function () {
-        this.style.display = "none";
-    });
-} catch (e) {}
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 16.5 8.2 4.2a1.6 1.6 0 0 1 3 0l4.2 12.3M6.4 12.1h8.2" stroke="url(#g)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="18.6" cy="18" r="2.4" stroke="url(#g)" stroke-width="1.9"/>
+          <defs><linearGradient id="g" x1="4" y1="4" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#7cd9ff"/><stop offset="1" stop-color="#6f8eff"/>
+          </linearGradient></defs>
+        </svg>
+      </div>
+      <div class="titles">
+        <p class="eyebrow">Jailbreak utility</p>
+        <h1><span class="wm">slopkit</span><span class="cursor" aria-hidden="true"></span></h1>
+      </div>
+    </div>
+
+    <p class="tagline">One-shot <b>WebKit + kernel</b> chain for PlayStation 5.
+    Open this page in the PS5 browser, run the exploit, then launch a payload
+    from the on-console menu.</p>
+
+    <div class="fwsec">
+      <p class="sec-label">Supported firmware</p>
+      <div class="fws">
+        <span class="fw">9.00</span><span class="fw">9.20</span><span class="fw">9.40</span>
+        <span class="fw">9.60</span><span class="fw">10.00</span><span class="fw">10.01</span>
+        <span class="fw">10.20</span><span class="fw">10.40</span><span class="fw">10.60</span>
+        <span class="fw">11.00</span><span class="fw">11.20</span><span class="fw">11.40</span>
+        <span class="fw">11.60</span><span class="fw">12.00</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a id="start" href="slopkit/poops.html?go=1&amp;auto=1&amp;trigger=netcontrol&amp;payload=1&amp;v=17" tabindex="0">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4.5 2.6v10.8a.9.9 0 0 0 1.4.75l8.5-5.4a.9.9 0 0 0 0-1.5l-8.5-5.4a.9.9 0 0 0-1.4.75Z"/></svg>
+        RUN EXPLOIT
+      </a>
+      <p class="hint">opens the console at <code>slopkit/poops.html?go=1</code> · arm with <code>?go=1</code></p>
+      <div id="status" class="hint" role="status"></div>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <p class="sec-label">Payload bundle</p>
+        <div class="prow"><span class="k">zftpd</span><span class="v"><span class="led" id="led-zftpd"></span><span id="ver-zftpd">…</span></span></div>
+        <div class="prow"><span class="k">zftpd web</span><span class="v"><span class="led" id="led-zhttp"></span><span id="ver-zhttp">…</span></span></div>
+        <div class="prow"><span class="k">MemDBG</span><span class="v"><span class="led" id="led-memdbg"></span><span id="ver-memdbg">…</span></span></div>
+      </div>
+      <div class="panel">
+        <p class="sec-label">System</p>
+        <div class="prow"><span class="k">elfldr</span><span class="v">:9021</span></div>
+        <div class="prow"><span class="k">chain</span><span class="v">netcontrol</span></div>
+        <div class="prow"><span class="k">state</span><span class="v"><span class="led" id="led-state"></span><span id="state-txt">idle</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    slopkit — credit: Egy, Sonic, Yenyen, Zeco, Gezine, Echostretch, Ufm42, TheFloW, John Tornblom, Flatz and PS5 R&amp;D Discord.<br>
+    Payloads: <a href="https://github.com/seregonwar/zftpd" target="_blank" rel="noopener">zftpd</a> ·
+    <a href="https://github.com/seregonwar/MemDBG" target="_blank" rel="noopener">MemDBG</a> ·
+    keep them fresh with <a href="tools/update_payloads.py">tools/update_payloads.py</a>
+  </footer>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    try { document.getElementById("start").focus(); } catch (e) { }
+
+    // ---- payload versions: local manifest + best-effort GitHub check ----
+    var UPSTREAM = {
+        "zftpd-ps5.elf":  { repo: "seregonwar/zftpd",  ver: "ver-zftpd",  led: "led-zftpd" },
+        "zftpd-ps5-zhttp.elf": { repo: "seregonwar/zftpd", ver: "ver-zhttp", led: "led-zhttp" },
+        "MemDBG-ps5.elf": { repo: "seregonwar/MemDBG", ver: "ver-memdbg", led: "led-memdbg" }
+    };
+
+    var localTag = {};
+    function cleanTag(t) { return String(t || "").replace(/^v/i, ""); }
+
+    // render(file, tag, latest): tag comes from the local manifest, latest
+    // from the best-effort GitHub check. A newer upstream release is shown
+    // as "X → Y" with an amber LED; the bundled (local) version stays green.
+    function render(file, tag, latest) {
+        var u = UPSTREAM[file], el, led;
+        if (!u) return;
+        if (tag) localTag[file] = tag;
+        el = document.getElementById(u.ver);
+        led = document.getElementById(u.led);
+        var cur = tag || localTag[file] || null;
+        var isNewer = !!latest && !!cur && latest !== cur;
+        var text = cur ? cleanTag(cur) : "missing";
+        if (isNewer) text += " → " + cleanTag(latest);
+        if (el) el.textContent = text;
+        if (led) led.className = "led" + (cur ? (isNewer ? " warn" : " ok") : "");
+    }
+
+    function setStateLed(cls, txt) {
+        var led = document.getElementById("led-state");
+        var t = document.getElementById("state-txt");
+        if (led) led.className = "led " + cls;
+        if (t) t.textContent = txt;
+    }
+    setStateLed("", "ready");
+
+    fetch("payloads/manifest.json", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error("http " + r.status)); })
+        .then(function (m) {
+            var src = (m && m.sources) || {};
+            for (var file in UPSTREAM)
+                if (Object.prototype.hasOwnProperty.call(src, file))
+                    render(file, src[file].tag, null);
+        })
+        .catch(function () { render("zftpd-ps5.elf", null, null); render("MemDBG-ps5.elf", null, null); });
+
+    // best-effort: report when a newer upstream release exists. GitHub's asset
+    // CDN sends no CORS headers, so downloads always stay local — run
+    // tools/update_payloads.py on the host to refresh the bundle.
+    function checkUpstream(file) {
+        var u = UPSTREAM[file];
+        if (!u) return;
+        fetch("https://api.github.com/repos/" + u.repo + "/releases/latest", { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error()); })
+            .then(function (rel) { if (rel && rel.tag_name) render(file, null, rel.tag_name); })
+            .catch(function () { });
+    }
+    Object.keys(UPSTREAM).forEach(checkUpstream);
+})();
 </script>
 
 </body>
