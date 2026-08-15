@@ -4,9 +4,9 @@
       "asset": "MemDBG-ps5.elf",
       "desc": "MemDBG memory debugger / trainer daemon",
       "repo": "seregonwar/MemDBG",
-      "sha256": "0dd4358dee695934019ccf5ad192f6684bd156440e86d93a48cb9c7d4cf6f760",
+      "sha256": "1e2514db160f3b9f0114780e6d92f5034baaa61482b337533284715c4dca39e8",
       "size": 1254240,
-      "tag": "nightly-20260814-gef4bbc7"
+      "tag": "nightly-20260814-gc58927e"
     },
     "zftpd-ps5-zhttp.elf": {
       "asset": "zftpd-ps5-zhttp-v1.5.0.elf",
@@ -25,5 +25,5 @@
       "tag": "v1.5.0"
     }
   },
-  "updated_at": "2026-08-14T05:48:55Z"
+  "updated_at": "2026-08-15T04:50:19Z"
 }
