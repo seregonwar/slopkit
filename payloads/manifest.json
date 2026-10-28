@@ -9,21 +9,21 @@
       "tag": "nightly-20260930-g6e493c9"
     },
     "zftpd-ps5-zhttp.elf": {
-      "asset": "zftpd-ps5-zhttp-v1.6.0.elf",
+      "asset": "zftpd-ps5-zhttp-v1.7.0.elf",
       "desc": "zftpd FTP + web file explorer (zhttp)",
       "repo": "seregonwar/zftpd",
-      "sha256": "fc59b60aab2dce9a8bae385c106bfa174048d765c826101355f1f010a789b497",
-      "size": 19221056,
-      "tag": "v1.6.0"
+      "sha256": "8f78ac0cde64a0744b82663d4a6bf8c1d7e937876dceddc219a21164578bd96e",
+      "size": 19291608,
+      "tag": "v1.7.0"
     },
     "zftpd-ps5.elf": {
-      "asset": "zftpd-ps5-v1.6.0.elf",
+      "asset": "zftpd-ps5-v1.7.0.elf",
       "desc": "zftpd FTP server (replaces the legacy ftpsrv)",
       "repo": "seregonwar/zftpd",
-      "sha256": "39ed57bef579282418f822da2e58ea5d56acfa5aa4cd38816744b1f610bfa14d",
-      "size": 495456,
-      "tag": "v1.6.0"
+      "sha256": "533ef2ea5f56af392419b6ce6d05112da79428c2fef252a1a2bcf388be617484",
+      "size": 484136,
+      "tag": "v1.7.0"
     }
   },
-  "updated_at": "2026-10-01T11:00:57Z"
+  "updated_at": "2026-10-28T10:39:05Z"
 }
